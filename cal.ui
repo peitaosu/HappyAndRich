@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+    <class>CALWindow</class>
+    <widget class="QMainWindow" name="CALWindow">
+        <property name="geometry">
+            <rect>
+                <x>0</x>
+                <y>0</y>
+                <width>680</width>
+                <height>300</height>
+            </rect>
+        </property>
+        <property name="windowTitle">
+            <string>HR Calendar</string>
+        </property>
+        <widget class="QWidget" name="CalendarWidget">
+            <widget class="QCalendarWidget" name="Calendar">
+                <property name="geometry">
+                    <rect>
+                        <x>30</x>
+                        <y>30</y>
+                        <width>460</width>
+                        <height>240</height>
+                    </rect>
+                </property>
+            </widget>
+            <widget class="QComboBox" name="DateType">
+                <property name="geometry">
+                    <rect>
+                        <x>500</x>
+                        <y>30</y>
+                        <width>130</width>
+                        <height>20</height>
+                    </rect>
+                </property>
+                <item>
+                    <property name="text">
+                        <string>Workday</string>
+                    </property>
+                </item>
+                <item>
+                    <property name="text">
+                        <string>Weekend</string>
+                    </property>
+                </item>
+                <item>
+                    <property name="text">
+                        <string>Holiday</string>
+                    </property>
+                </item>
+            </widget>
+            <widget class="QPushButton" name="SaveButton">
+                <property name="geometry">
+                    <rect>
+                        <x>500</x>
+                        <y>250</y>
+                        <width>130</width>
+                        <height>20</height>
+                    </rect>
+                </property>
+                <property name="text">
+                    <string>Save</string>
+                </property>
+            </widget>
+            <widget class="QPushButton" name="ResetButton">
+                <property name="geometry">
+                    <rect>
+                        <x>500</x>
+                        <y>220</y>
+                        <width>130</width>
+                        <height>20</height>
+                    </rect>
+                </property>
+                <property name="text">
+                    <string>Reset</string>
+                </property>
+            </widget>
+        </widget>
+    </widget>
+    <resources/>
+    <connections/>
+</ui>
