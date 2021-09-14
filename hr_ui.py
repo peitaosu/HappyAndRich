@@ -41,6 +41,7 @@ class Rich():
         if (self.happy.conversion_date.year == int(self.year) and self.happy.conversion_date.month < int(self.month)) or (self.happy.conversion_date.year < int(self.year)):
             self.probation = False
         else:
+            self.month_day = self.happy.attendation_month_day
             self.probation = True
         if (self.happy.leave_date.year == int(self.year) and self.happy.leave_date.month == int(self.month)):
             self.leave = self.happy.leave_date.day
@@ -85,7 +86,9 @@ class Rich():
                 self.sick_leave_percent = 1.0
 
     def get_salary(self):
+        month_type = "After Convertion"
         if self.happy.conversion_date.year == int(self.year) and self.happy.conversion_date.month == int(self.month):
+            month_type = "During Convertion"
             self.salary = self.base
             before_convert = 0.0
             for work_date in self.happy.attendation["Workday"].keys():
@@ -115,23 +118,29 @@ class Rich():
                 else:
                     over_after_convert += self.happy.attendation["Overtime"][over_date]
             self.salary += self.base / self.month_day * (over_before_convert + over_after_convert)
-        elif self.happy.conversion_date.year == int(self.year) and self.happy.conversion_date.month > int(self.month) or self.happy.conversion_date.year > int(self.year):
+        elif (self.happy.conversion_date.year == int(self.year) and self.happy.conversion_date.month > int(self.month)) or self.happy.conversion_date.year > int(self.year):
+            month_type = "Before Convertion"
             self.salary = self.base * self.probation_percent
             if self.onboard:
                 self.salary -= self.base * self.probation_percent / self.month_day * (len([1 for day in self.happy.attendation["Workday"].keys() if int(day) < self.onboard]) + len([1 for day in self.happy.attendation["Holiday"].keys() if int(day) < self.onboard]))
-            self.salary -= self.base / self.month_day * (sum(self.happy.attendation["Sick Leave"].values()) * (1.0 - self.sick_leave_percent) + sum(self.happy.attendation["Personal Leave"].values()))
-            self.salary += self.base / self.month_day * sum(self.happy.attendation["Overtime"].values()) * self.probation_percent
+            self.salary -= self.base * self.probation_percent / self.month_day * (sum(self.happy.attendation["Sick Leave"].values()) * (1.0 - self.sick_leave_percent) + sum(self.happy.attendation["Personal Leave"].values()))
+            self.salary += self.base * self.probation_percent / self.month_day * sum(self.happy.attendation["Overtime"].values()) * self.probation_percent
         elif self.happy.leave_date.year == int(self.year) and self.happy.leave_date.month == int(self.month):
+            month_type = "Leave Month"
             self.salary = self.base
             self.salary -= self.base / self.month_day * len([1 for day in self.happy.attendation["Workday"].keys() if int(day) > self.leave]) 
             self.salary -= self.base / self.month_day * (sum(self.happy.attendation["Sick Leave"].values()) * (1.0 - self.sick_leave_percent) + sum(self.happy.attendation["Personal Leave"].values()))
             self.salary += self.base / self.month_day * sum(self.happy.attendation["Overtime"].values()) * self.probation_percent
         else:
+            month_type = "Normal Month"
             self.salary = self.base
             self.salary -= self.base / self.month_day * (sum(self.happy.attendation["Sick Leave"].values()) * (1.0 - self.sick_leave_percent) + sum(self.happy.attendation["Personal Leave"].values()))
             self.salary += self.base / self.month_day * sum(self.happy.attendation["Overtime"].values())
         self.salary += self.food_bonus + self.attend_bonus + self.phone_bonus + self.other_bonus
         return {
+            "Month Day": self.month_day,
+            "Month Type": month_type,
+            "Onboard": self.onboard,
             "Base": self.base,
             "Probation %": self.probation_percent,
             "Food Bonus": self.food_bonus,
