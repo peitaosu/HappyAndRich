@@ -91,21 +91,24 @@ class Rich():
             month_type = "During Convertion"
             self.salary = self.base
             before_convert = 0.0
+            leaved = 32
+            if self.happy.leave_date.year == int(self.year) and self.happy.leave_date.month == int(self.month):
+                leaved = self.happy.leave_date.day
             for work_date in self.happy.attendation["Workday"].keys():
-                if int(work_date) < self.happy.conversion_date.day:
+                if int(work_date) < self.happy.conversion_date.day and int(work_date) <= leaved:
                     before_convert += self.happy.attendation["Workday"][work_date] * (1.0 - self.probation_percent)
             for holiday_date in self.happy.attendation["Holiday"].keys():
-                if int(holiday_date) < self.happy.conversion_date.day:
+                if int(holiday_date) < self.happy.conversion_date.day and int(holiday_date) <= leaved:
                     before_convert += self.happy.attendation["Holiday"][holiday_date] * (1.0 - self.probation_percent)
             leave_before_convert = 0
             leave_after_convert = 0
             for sick_date in self.happy.attendation["Sick Leave"].keys():
-                if int(sick_date) < self.happy.conversion_date.day:
+                if int(sick_date) < self.happy.conversion_date.day and int(sick_date) <= leaved:
                     leave_before_convert += self.happy.attendation["Sick Leave"][sick_date] * (1.0 - self.sick_leave_percent * self.probation_percent) + (1 - self.happy.attendation["Sick Leave"][sick_date]) * (1 - self.probation_percent) 
                 else:
                     leave_after_convert += self.happy.attendation["Sick Leave"][sick_date] * (1.0 - self.sick_leave_percent)
             for personal_date in self.happy.attendation["Personal Leave"].keys():
-                if int(personal_date) < self.happy.conversion_date.day:
+                if int(personal_date) < self.happy.conversion_date.day and int(personal_date) <= leaved:
                     leave_before_convert += self.happy.attendation["Personal Leave"][personal_date]
                 else:
                     leave_after_convert += self.happy.attendation["Personal Leave"][personal_date]
@@ -113,7 +116,7 @@ class Rich():
             over_before_convert = 0
             over_after_convert = 0
             for over_date in self.happy.attendation["Overtime"].keys():
-                if int(over_date) < self.happy.conversion_date.day:
+                if int(over_date) < self.happy.conversion_date.day and int(over_date) <= leaved:
                     over_before_convert += self.happy.attendation["Overtime"][over_date] * self.probation_percent
                 else:
                     over_after_convert += self.happy.attendation["Overtime"][over_date]
@@ -156,7 +159,7 @@ class HR_UI(QMainWindow):
         uic.loadUi("hr.ui", self)
         self.AttendationCalendar.setVerticalHeaderFormat(QCalendarWidget.NoVerticalHeader)
         self.AttendationCalendar.setCurrentPage(int(current_year), int(current_month))
-        self.ResetButton.clicked.connect(self.reset_attendation)
+        self.ResetButton.clicked.connect(self.reset)
         self.CalculateButton.clicked.connect(self.calculate)
         
 
@@ -188,6 +191,9 @@ class HR_UI(QMainWindow):
         self.funeral_color.setForeground(Qt.darkGray)
         self.overtime = QTextCharFormat()
         self.overtime.setForeground(Qt.darkBlue)
+        self.reset_attendation()
+
+    def reset(self):
         self.reset_attendation()
 
     def reset_attendation(self):
